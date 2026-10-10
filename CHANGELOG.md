@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.4 - Release candidate - 2026-10-10
+## 0.2.4 - 2026-10-10
 
 ### Changed
 
@@ -77,5 +77,5 @@
 - Include the project's MIT and Apache 2.0 license texts and remove placeholder
   author and repository metadata.
 
-This candidate has not been published. See [the release guide](docs/release.md) for the completed
-checks and the remaining release gates.
+Versions 0.2.2 and 0.2.3 were private release candidates. See
+[the release guide](docs/release.md) for qualification details.
