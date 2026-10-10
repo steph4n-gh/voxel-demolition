@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: '2'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Install toolchain and fetch locked dependencies
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component clippy
+          rustup default 1.99.0
+          rustup target add aarch64-apple-darwin
+          test "$(rustc -vV | sed -n 's/^host: //p')" = aarch64-apple-darwin
+          # Packaging reads license manifests for every dependency in Cargo metadata.
+          cargo fetch --locked
+          python3 -m pip install reportlab==4.4.9
+      - name: Qualify gameplay and source
+        run: |
+          # Footprint and symbol checks inspect the real release executable.
+          cargo build --locked --offline --release
+          cargo test --locked --offline --all-targets --no-fail-fast -- --test-threads=1
+          cargo test --locked --offline --lib campaign::tests:: -- --include-ignored --nocapture --test-threads=1
+          cargo test --locked --offline --test corporate_precision -- --ignored --nocapture --test-threads=1
+          cargo test --locked --offline --doc
+          cargo clippy --locked --offline --all-targets -- -D warnings
+      - name: Generate player manual
+        run: python3 scripts/build-manual.py
+      - name: Package local candidate
+        id: package
+        run: |
+          ./scripts/package-release.sh
+          version="$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')"
+          printf 'archive=dist/voxel-demolition-%s-aarch64-apple-darwin.zip\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'checksum=dist/voxel-demolition-%s-aarch64-apple-darwin-SHA256SUMS.txt\n' "$version" >> "$GITHUB_OUTPUT"
+      - name: Upload local candidate and manual
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: macos-local-candidate-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ steps.package.outputs.archive }}
+            ${{ steps.package.outputs.checksum }}
+            output/pdf/Voxel-Demolition-Player-Manual.pdf

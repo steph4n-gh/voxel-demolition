@@ -1,0 +1,25 @@
+/target
+/target_cli
+/target_*
+/dist/
+/output/
+**/*.rs.bk
+*.swp
+.DS_Store
+*.log
+test_output.txt
+test_loop
+test_loop.rs
+.agents/
+
+# Local credentials and signing material belong in Keychain, never in Git.
+.env
+.env.*
+*.p12
+*.pfx
+*.key
+*.p8
+*.mobileprovision
+
+# Temporary player-manual render checks
+/tmp/pdfs/
