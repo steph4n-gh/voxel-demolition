@@ -65,7 +65,7 @@ Macroquad providing windowing, rendering, audio playback, and the embedded font.
   and check transformed voxel positions at landing-zone boundaries. Replay and
   the workbench pause live simulation so inspection does not advance a contract.
 
-Read **[Inside Voxel Demolition: the engineering](docs/#inside-voxel-demolition)** for the
+Read **[Inside Voxel Demolition: the engineering](https://github.com/steph4n-gh/voxel-demolition/tree/main/docs#inside-voxel-demolition)** for the
 algorithms, source pointers, performance measurements, and the choices that make
 these systems work together.
 
