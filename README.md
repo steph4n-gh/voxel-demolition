@@ -120,7 +120,7 @@ to another directory if needed.
 
 - [CI checks](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/ci.yml): tests, Clippy, the manual, and a local
   macOS candidate on GitHub-hosted Apple Silicon runners.
-- [Contributing](CONTRIBUTING.md): focused fixes, checks, and contribution terms.
+- [Contributing](https://github.com/steph4n-gh/voxel-demolition?tab=contributing-ov-file): focused fixes, checks, and contribution terms.
 - [Developer notes](docs/development.md): source layout, simulation invariants,
   and test guidance.
 - [Release guide](docs/release.md): verification, packaging, macOS signing and
@@ -129,7 +129,7 @@ to another directory if needed.
 
 ## License
 
-Licensed under **MIT OR Apache-2.0**; see [LICENSE-MIT](LICENSE-MIT) and
-[LICENSE-APACHE](LICENSE-APACHE). Dependency and embedded-font attributions are
+Licensed under **MIT OR Apache-2.0**; see [LICENSE-MIT](https://github.com/steph4n-gh/voxel-demolition?tab=MIT-2-ov-file) and
+[LICENSE-APACHE](https://github.com/steph4n-gh/voxel-demolition?tab=Apache-2.0-1-ov-file). Dependency and embedded-font attributions are
 listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and included with release
 packages.

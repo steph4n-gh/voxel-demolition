@@ -62,7 +62,7 @@ grading. Help, the workbench, free cursor, and replay pause live simulation.
 
 ## Tests
 
-Run the normal checks in [CONTRIBUTING.md](../CONTRIBUTING.md). Start with a
+Run the normal checks in [CONTRIBUTING.md](https://github.com/steph4n-gh/voxel-demolition?tab=contributing-ov-file). Start with a
 subsystem or integration target while developing a fix:
 
 ```sh

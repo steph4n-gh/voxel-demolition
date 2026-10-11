@@ -569,7 +569,7 @@ There is no player save/load menu, autosave, exported replay file, or in-game co
 | Effects sound intermittent | A longer duplicate-sound guard suppresses repeated copies of one effect. Try a shorter guard. |
 | A dense collapse becomes less responsive | Let the active scene settle, pause to inspect it, or reset for a fresh experiment. No fixed FPS is promised. |
 
-For an issue report, include the game version, archive name, Mac model/OS, district or contract, loadout, and a short sequence that reproduces it. If possible, attach a screenshot of the HUD and explain whether the problem survives a fresh world reset. The repository's [README](../README.md) links the project and developer guidance.
+For an issue report, include the game version, archive name, Mac model/OS, district or contract, loadout, and a short sequence that reproduces it. If possible, attach a screenshot of the HUD and explain whether the problem survives a fresh world reset. The repository's [README](https://github.com/steph4n-gh/voxel-demolition#readme) links the project and developer guidance.
 
 ## 13. Glossary and pocket reference
 

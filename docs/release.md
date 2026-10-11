@@ -10,8 +10,10 @@ instructions are in [the manual](manual.md).
 The former size-focused `release-retro` profile used `opt-level = "z"`; the
 retained `release` profile uses `opt-level = 3`. Both use LTO, one codegen unit,
 stripped symbols and panic abort. Four measured pairs on the Apple M4 Pro used
-balanced AB/BA order and a full-process warmup for each profile. Benchmark source
-commit: `8eadeec67c28850480892553d147ffb170f62775`.
+balanced AB/BA order and a full-process warmup for each profile. These are
+historical local qualification measurements from source commit
+`8eadeec67c28850480892553d147ffb170f62775`, retained in private history rather than
+the public source snapshot.
 
 | Headless CPU workload | Release median | Former retro median | Paired median speedup |
 | --- | ---: | ---: | ---: |
@@ -26,9 +28,13 @@ native rendering FPS, GPU work or cold app startup.
 
 The old retro build saved 557,888 raw executable bytes and 375,551 compressed
 archive bytes. That saving does not justify the measured runtime cost, so the
-game ships the faster release build only. Benchmark commands, source hashes, balanced
-run logs and detailed counts remain in
-`dist/validation/build-comparison/receipt.json`.
+game ships the faster release build only. Benchmark commands, source hashes,
+balanced run logs and detailed counts remain in the local, ignored
+`dist/validation/build-comparison/receipt.json`; that receipt and the exact paired
+runner are not part of the public repository. Public
+[performance fixtures](../tests/performance_benchmarks.rs) and the
+[Corporate Drop fixture](../tests/corporate_precision.rs) support further
+measurements, but do not reproduce the historical paired experiment by themselves.
 
 Qualification distinguishes headless simulation from native input/rendering
 checks. Native coverage is macOS 27.0 on Apple M4 Pro; older macOS versions,
@@ -138,9 +144,8 @@ hosted tests do not replace native input, rendering or manual review.
 from `main`. Supply an existing `vX.Y.Z` tag whose commit is on `origin/main` and
 whose version matches `Cargo.toml`. It checks out that exact commit, repeats
 qualification and generates the PDF before importing credentials. Existing draft
-or published releases are refused; the signed `v0.2.3` tag and its private release
-assets remain unchanged. Workflow/script changes require a new qualified version
-tag for a new packaged release.
+or published releases are refused. Workflow/script changes require a new
+qualified version tag for a new packaged release.
 
 Before using signing automation, configure the `macos-release` environment with a
 deployment rule allowing only the `main` branch and required reviewers where

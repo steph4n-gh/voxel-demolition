@@ -85,7 +85,7 @@ Explore [shared material response](../src/voxel.rs#L66),
 [support analysis](../src/voxel.rs#L1615),
 [damage-preserving detachment](../src/physics.rs#L1988),
 [moving-body damage](../src/physics.rs#L1639),
-[contact impulses](../src/physics.rs#L702),
+[contact impulses](../src/physics.rs#L788),
 [mass-preserving fracture](../src/physics.rs#L1230),
 [rotation-aware hits](../src/physics.rs#L5393), and
 [wire-saw cuts](../src/weapon.rs#L1539).
