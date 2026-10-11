@@ -39,13 +39,37 @@ chosen cut into a falling skyline.
 *Actual gameplay captures; [artwork provenance](docs/manual-assets/README.md)
 records the capture version.*
 
-## A lot of game in a little binary
+## Engineering highlights
 
-The buildings, terrain geometry, sound effects, and music are generated in code.
-A 0.5 m voxel grid drives damage and structural connectivity; detached pieces
-become physics bodies that can take further damage and fracture. Rust and
-Macroquad provide a compact native foundation, with Macroquad handling the
-window, rendering, audio playback, and embedded font.
+**A city built from materials. A soundtrack built from signals. Collapses you
+can inspect.** The small executable contains the rules for building and breaking
+the world: custom simulation, mesh generation, and audio synthesis in Rust, with
+Macroquad providing windowing, rendering, audio playback, and the embedded font.
+
+- **A grid with 10,027,008 cells.** A 192 × 272 × 192 grid at 0.5 m resolution
+  stores materials and their remaining health, including excavatable ground.
+  Nine districts are constructed from code-defined foundations, slabs, cores,
+  columns, facades, and volatile installations.
+- **Geometry becomes physics.** Support and connectivity analysis extracts
+  detached voxel islands into moving bodies. Their materials and damage survive
+  the handoff; rotating rubble remains hittable, damageable, and fracturable.
+  The wire-saw can cut both standing structures and already-falling pieces.
+- **Destruction changes the renderer.** Dirty 8 × 8 × 8 chunks rebuild as the
+  world changes. Compatible intact faces merge into larger quads; damaged faces
+  retain local detail. Reused buffers and mesh storage reduce repeated work.
+- **Sound is generated content.** Thirty synthesized effects and a four-layer
+  dark-synth score are generated in memory at startup. Gameplay selects calm,
+  intense, and slow-motion music loops as demolition unfolds.
+- **The systems close the loop.** Slag damages material, water quenches slag,
+  and cooled slag can form basalt. Precision contracts wait for rubble to settle
+  and check transformed voxel positions at landing-zone boundaries. Replay and
+  the workbench pause live simulation so inspection does not advance a contract.
+
+Read **[Inside Voxel Demolition: the engineering](docs/engineering.md)** for the
+algorithms, source pointers, performance measurements, and the choices that make
+these systems work together.
+
+### Small enough to share
 
 | 0.2.4 Apple Silicon package | Size |
 | --- | ---: |
