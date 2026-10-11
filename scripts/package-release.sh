@@ -2,6 +2,7 @@
 # Build and package this host's release candidate. Requires Rust, Cargo and Python 3.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+PYTHON="${PYTHON:-python3}"
 
 sign=0
 notarize=0
@@ -24,11 +25,15 @@ if [[ $# -gt 1 ]]; then
     exit 1
 fi
 
-manual_pdf="output/pdf/Voxel-Demolition-Player-Manual.pdf"
-if [[ ! -s "$manual_pdf" ]]; then
-    echo "Missing player manual PDF: $manual_pdf. Generate it with scripts/build-manual.py in a ReportLab-enabled Python environment; see docs/release.md." >&2
+if [[ "$sign" == 1 && "${GITHUB_ACTIONS:-}" == true ]]; then
+    echo "Developer ID signing and notarization must run locally, outside GitHub Actions." >&2
     exit 1
 fi
+
+# Generate once from current source; never accept an old ignored output PDF.
+# PYTHON can select the documented typesetting virtual environment.
+"$PYTHON" -c 'import reportlab, pypdf'
+"$PYTHON" scripts/build-manual.py
 
 host_target="$(rustc -vV | sed -n 's/^host: //p')"
 if [[ -z "$host_target" ]]; then
@@ -42,7 +47,7 @@ if [[ "$sign" == 1 ]]; then
         exit 1
     fi
     : "${MACOS_SIGNING_IDENTITY:?Set MACOS_SIGNING_IDENTITY to an installed Developer ID Application identity.}"
-    security find-identity -v -p codesigning | python3 -c '
+    security find-identity -v -p codesigning | "$PYTHON" -c '
 import re, sys
 selected = sys.argv[1]
 identities = re.findall(r"\b([0-9A-Fa-f]{40}) \"([^\"]+)\"", sys.stdin.read())
@@ -67,7 +72,7 @@ trap 'rm -f "$metadata_file"' EXIT
 cargo metadata --locked --offline --filter-platform "$host_target" --format-version 1 > "$metadata_file"
 cargo build --locked --offline --release --target "$host_target"
 
-python3 - "$metadata_file" "$host_target" "$sign" "$notarize" <<'PY'
+"$PYTHON" - "$metadata_file" "$host_target" "$sign" "$notarize" <<'PY'
 import hashlib
 import json
 import os
@@ -137,7 +142,7 @@ revision = command_output("git", "rev-parse", "HEAD")
 git_status = command_output("git", "status", "--porcelain")
 rust_version = command_output("rustc", "-vV")
 cargo_version = command_output("cargo", "--version")
-source_paths = [root / "Cargo.toml", root / "Cargo.lock", root / ".cargo/config.toml", root / "scripts/package-release.sh", root / "scripts/build-manual.py"]
+source_paths = [root / "Cargo.toml", root / "Cargo.lock", root / ".cargo/config.toml", root / "scripts/package-release.sh", root / "scripts/build-manual.py", root / "scripts/verify-release-manual.py", root / "scripts/publish-release.sh"]
 source_paths += sorted((root / "src").rglob("*.rs")) + sorted((root / "tests").rglob("*.rs"))
 source_paths += [root / name for name in documents]
 source_paths += manual_assets
@@ -323,13 +328,20 @@ with tempfile.TemporaryDirectory(prefix="voxel-release-") as staging_directory:
     archive_path = Path(staging_directory) / (archive_name + ".zip")
     make_archive(stage, archive_path)
     archive_hash = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+    checksum_path = Path(staging_directory) / (archive_name + "-SHA256SUMS.txt")
+    checksum_path.write_text(f"{archive_hash}  {archive_path.name}\n")
+    # Verify the actual ZIP, source inputs, PDF destinations and all manual copies
+    # before exporting any release files. Live URL checks run before upload.
+    subprocess.run([sys.executable, str(root / "scripts/verify-release-manual.py"),
+                    "--archive", str(archive_path), "--checksum", str(checksum_path),
+                    "--pdf", str(stage / manual_pdf_name)], check=True)
     print(f"Prepared {archive_path.name} ({archive_path.stat().st_size:,} bytes; executable {executable.stat().st_size:,} bytes)")
 
-    # Publish only after assembly, signing and verification have completed.
+    # Export one verified triplet. Never upload a separately regenerated PDF.
     final_archive_name = archive_path.name
+    shutil.copy2(stage / manual_pdf_name, dist / manual_pdf.name)
+    shutil.move(str(checksum_path), str(dist / checksum_path.name))
     shutil.move(str(archive_path), str(dist / final_archive_name))
 
-checksum_path = dist / (f"voxel-demolition-{version}-{host_target}" + artifact_suffix + "-SHA256SUMS.txt")
-checksum_path.write_text(f"{archive_hash}  {final_archive_name}\n")
-print(checksum_path.relative_to(root))
+print((dist / checksum_path.name).relative_to(root))
 PY

@@ -12,8 +12,10 @@ Ubuntu, Macroquad's windowing and audio dependencies require these packages:
 sudo apt install pkg-config libx11-dev libxi-dev libgl1-mesa-dev libasound2-dev
 ```
 
-Packaging also requires Python 3. Platform qualification and signing tools are
-covered in the [release guide](release.md).
+Packaging also requires Python 3.11 or newer with ReportLab 4.4.9 and pypdf
+6.19.0. The packager generates the PDF from the current manual sources and exports the same
+bytes for the app and the separate download. Platform qualification, manual link
+checks and local signing tools are covered in the [release guide](release.md).
 
 ## Source layout
 
@@ -100,5 +102,15 @@ budgets do not measure rendered frame rate; retain the workload and host context
 with a performance claim.
 
 Release qualification and signed macOS packaging are described in
-[the release guide](release.md). Keep local receipts under ignored
-`dist/validation/`; Git history preserves previous documentation and code.
+[the release guide](release.md). Run the release manual verifier tests when
+changing packaging or documentation checks:
+
+```sh
+python3 -m unittest discover -s tests -p 'test_release_manual.py'
+```
+
+The local publication script checks the archive, exported PDF, checksum and
+live links before creating or publishing a release. Signing and notarization use
+this Mac's Keychain; CI only uploads an ad hoc candidate. Keep local receipts
+under ignored `dist/validation/`; Git history preserves previous documentation
+and code.

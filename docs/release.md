@@ -47,8 +47,8 @@ receipts. Simulations do not establish a complete human campaign playthrough.
 ## Build and qualify
 
 Use the pinned `Cargo.lock` and an installed Rust toolchain with cached
-dependencies. Python 3 is required for packaging. Work in an unsynchronized
-checkout, using the default ignored `target_cli` directory so the footprint and
+dependencies. Python 3.11 or newer is required for packaging. Work in an
+unsynchronized checkout, using the default ignored `target_cli` directory so the footprint and
 symbol checks can inspect the release executable. App assembly and signing use
 the system temporary directory to avoid Finder/iCloud metadata.
 
@@ -62,22 +62,23 @@ cargo test --locked --offline --doc
 cargo clippy --locked --offline --all-targets -- -D warnings
 ```
 
-Generate the PDF player manual before packaging with a Python environment that
-has [ReportLab](https://docs.reportlab.com/install/open_source_installation/)
-installed. For example, keep the typesetting dependency in a
-temporary virtual environment:
+Packaging requires [ReportLab](https://docs.reportlab.com/install/open_source_installation/)
+4.4.9 for typesetting and pypdf 6.19.0 for verification. Keep these dependencies
+in a temporary virtual environment and select it with `PYTHON`:
 
 ```sh
 python3 -m venv /tmp/voxel-demolition-manual
-/tmp/voxel-demolition-manual/bin/python -m pip install reportlab==4.4.9
-/tmp/voxel-demolition-manual/bin/python scripts/build-manual.py
+/tmp/voxel-demolition-manual/bin/python -m pip install reportlab==4.4.9 pypdf==6.19.0
+export PYTHON=/tmp/voxel-demolition-manual/bin/python
 ```
 
-The packager requires `output/pdf/Voxel-Demolition-Player-Manual.pdf` alongside
-the tracked Markdown, generator and screenshot/provenance sources. ReportLab is
-only needed to generate the PDF; packaging an existing verified PDF uses Python
-3's standard library. Release provenance must come from a clean, committed
-source tree.
+The packager regenerates the player PDF from the tracked Markdown, generator,
+screenshots and provenance sources every time. It stages one PDF and copies its
+exact bytes into the app, the archive's `docs/` directory and
+`dist/Voxel-Demolition-Player-Manual.pdf` for the separate download. The PDF and
+Markdown hashes are recorded in the package provenance. Release provenance must
+come from a clean, committed source tree; an old PDF in `output/pdf/` cannot
+satisfy packaging.
 
 ## Package macOS
 
@@ -90,12 +91,14 @@ notarization ticket. Use `--notarize` for distribution:
 ```sh
 MACOS_SIGNING_IDENTITY='<installed Developer ID Application name or SHA-1>' \
 MACOS_NOTARY_PROFILE=voxel-demolition \
+PYTHON=/tmp/voxel-demolition-manual/bin/python \
 ./scripts/package-release.sh --notarize
 ```
 
 Use a valid installed Developer ID certificate/private key and existing
-notarytool Keychain profile. Keep secrets outside the repository. List identities
-with `security find-identity -v -p codesigning`. Apple's [Developer ID certificate guide](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/)
+notarytool Keychain profile on the local Mac. Keep signing and notarization
+credentials in its Keychain, outside the repository and GitHub Actions. List
+identities with `security find-identity -v -p codesigning`. Apple's [Developer ID certificate guide](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/)
 and [notarytool credential guide](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)
 describe setup; an App Store Connect **team** API key can be stored in a
 Keychain profile without placing secrets in release commands.
@@ -109,6 +112,27 @@ receipt, stderr, exit code and log under
 `dist/validation/<archive-name>/attempt-*`, requires Apple acceptance without
 reported issues, staples the app, checks strict signatures and Gatekeeper, then
 creates the final ZIP and SHA-256 checksum file in `dist/`.
+
+Packaging then verifies the ZIP checksum, source provenance, bundled Markdown
+and PDF hashes, equality of all PDF copies, PDF structure and internal links,
+and Markdown link targets. The exported manual and archive are one release
+candidate; do not substitute a separately generated PDF after packaging.
+
+Before uploading, check the live external URLs and HTML fragment targets too:
+
+```sh
+version="$("$PYTHON" -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')"
+"$PYTHON" scripts/verify-release-manual.py \
+  --archive "dist/voxel-demolition-$version-aarch64-apple-darwin-notarized.zip" \
+  --pdf dist/Voxel-Demolition-Player-Manual.pdf \
+  --checksum "dist/voxel-demolition-$version-aarch64-apple-darwin-notarized-SHA256SUMS.txt" \
+  --check-links
+```
+
+Use the filenames produced for the candidate's version and host. Failed links,
+missing fragments or mismatched manuals stop verification. A successful link
+check establishes availability at that time; it cannot keep external pages from
+changing later.
 
 The single archive is named
 `voxel-demolition-<version>-<host>[-signed|-notarized].zip`; the default local
@@ -126,11 +150,14 @@ when producing new artifacts.
 ## GitHub Actions
 
 [CI](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/ci.yml) runs on pushes to `main`, pull requests and
-manual dispatch. It uses Rust 1.99.0 with Clippy, Python 3.12 and ReportLab 4.4.9,
-fetches locked dependencies, builds the release executable, then runs the full suite, all 16 campaign tests
+manual dispatch. It uses Rust 1.99.0 with Clippy, Python 3.12, ReportLab 4.4.9
+and pypdf 6.19.0. It fetches locked dependencies, builds the release executable,
+then runs the full suite, all 16 campaign tests
 including ignored qualifications, the dedicated Corporate Drop fixture, doc
-tests and Clippy. It generates the manual and uploads exactly the local candidate
-ZIP, its checksum file and the PDF. This candidate has an ad hoc app seal.
+tests and Clippy. It runs the release manual verifier tests, packages a freshly
+generated manual, and verifies PDF parity, source provenance and live links
+before uploading the candidate ZIP, its checksum file and the exact exported
+PDF. This candidate has an ad hoc app seal.
 CI uses read-only repository access, two Cargo build jobs and the default ignored
 `target_cli` build directory on the disposable runner. Superseded CI runs are canceled.
 
@@ -140,51 +167,46 @@ Its speed and memory differ from the local M4 Pro qualification host. Keep timin
 assertions unchanged until actual hosted measurements establish any problem;
 hosted tests do not replace native input, rendering or manual review.
 
-[macOS draft release](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/macos-release.yml) is manual-only
-from `main`. Supply an existing `vX.Y.Z` tag whose commit is on `origin/main` and
-whose version matches `Cargo.toml`. It checks out that exact commit, repeats
-qualification and generates the PDF before importing credentials. Existing draft
-or published releases are refused. Workflow/script changes require a new
-qualified version tag for a new packaged release.
-
-Before using signing automation, configure the `macos-release` environment with a
-deployment rule allowing only the `main` branch and required reviewers where
-supported. Private environments need GitHub Pro, Team or Enterprise; required
-reviewers for private repositories need Enterprise. See GitHub's
-[environment availability](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments).
-Install these **environment** secrets and variables through GitHub settings:
-
-| Kind | Names | Value |
-| --- | --- | --- |
-| Secrets | `MACOS_CERTIFICATE_P12_BASE64`, `MACOS_CERTIFICATE_PASSWORD` | Base64 Developer ID certificate/private-key export and its password |
-| Secret | `APPLE_API_PRIVATE_KEY_BASE64` | Base64 App Store Connect team API private key |
-| Variables | `MACOS_SIGNING_IDENTITY`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID` | Certificate name or SHA-1, API key ID and issuer ID |
-
-No cloud signing credentials are installed by these source changes, and hosted
-signing has not been verified. The workflow keeps decoded files and an unlocked
-temporary Keychain on the isolated runner, authorizes `codesign` access,
-uses the explicit Keychain for notarytool and removes credentials in
-an always-run cleanup step. It creates only a GitHub **draft**, attaching the
-notarized ZIP, checksum and PDF. Download and verify those exact assets, perform
-native smoke testing and inspect the manual before publishing manually.
-Failed runs retain only notarization receipts, logs, stderr, exit status and
-Gatekeeper diagnostics as an Actions artifact; credential files and submission
-ZIPs are excluded.
+Signing, notarization and GitHub release publication run locally through
+`scripts/package-release.sh` and `scripts/publish-release.sh`. There is no hosted
+signing workflow or credential upload step.
 
 ## Public distribution
 
-Before publishing, audit the exact committed source/history and verify a fresh
-clone. Keep the repository private until its source and assets are ready.
-Changing visibility exposes source and Actions history/logs; GitHub documents the
-[visibility effects](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility).
+Audit the exact committed source/history and verify a fresh clone for each
+release. Create the matching `vX.Y.Z` tag from the qualified commit and check it
+out with a clean tree, then package it locally with `--notarize`.
+From that same checkout, use the authenticated GitHub CLI and local publication
+wrapper:
 
-Create the version tag from the qualified commit and prepare a GitHub release
-with the notarized archive, checksum file and player manual. Review the complete
-draft before publication, then download the released assets into a clean
-location, compare their hashes, extract the app and repeat launch/Gatekeeper
-checks. GitHub's [release guide](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
-describes draft releases and attaching assets. Public visibility, tag creation
-and release publication are separate actions from local preparation.
+```sh
+PYTHON=/tmp/voxel-demolition-manual/bin/python ./scripts/publish-release.sh
+```
+
+The wrapper infers the `vX.Y.Z` tag from `Cargo.toml`, requires the clean checkout
+to match that tag, verifies the candidate and live links before any GitHub
+mutation, and creates a draft with the notarized ZIP, its checksum file and the
+exact exported PDF. It checks that the tag and
+candidate belong to the qualified source. Existing drafts and published releases
+are refused when preparing a new draft; this workflow does not replace or move a
+public version tag.
+
+Review the complete draft, inspect the PDF layout, and perform native smoke
+testing on the downloaded app. Then publish through the same wrapper:
+
+```sh
+PYTHON=/tmp/voxel-demolition-manual/bin/python ./scripts/publish-release.sh --publish
+```
+
+The publishing pass downloads the existing draft assets into a fresh location,
+requires the same bytes as the local ZIP, checksum and PDF, and checks their
+parity and live links. It also verifies the downloaded app signature, notarization
+ticket and Gatekeeper acceptance before making the release public. Download
+the published assets again, compare hashes, extract the app and repeat
+launch/Gatekeeper checks. GitHub's [release guide](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
+describes draft releases and attaching assets. Manual and native review remain
+part of release qualification; link and PDF checks do not exercise gameplay or
+judge page layout.
 
 The project is dual-licensed under MIT or Apache-2.0. Both project license files
 and the pinned dependency notices accompany distributions. Review new dependency

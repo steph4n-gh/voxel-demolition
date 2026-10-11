@@ -39,7 +39,7 @@ jobs:
           test "$(rustc -vV | sed -n 's/^host: //p')" = aarch64-apple-darwin
           # Packaging reads license manifests for every dependency in Cargo metadata.
           cargo fetch --locked
-          python3 -m pip install reportlab==4.4.9
+          python3 -m pip install reportlab==4.4.9 pypdf==6.19.0
       - name: Qualify gameplay and source
         run: |
           # Footprint and symbol checks inspect the real release executable.
@@ -49,8 +49,8 @@ jobs:
           cargo test --locked --offline --test corporate_precision -- --ignored --nocapture --test-threads=1
           cargo test --locked --offline --doc
           cargo clippy --locked --offline --all-targets -- -D warnings
-      - name: Generate player manual
-        run: python3 scripts/build-manual.py
+      - name: Test release manual verification
+        run: python3 -m unittest discover -s tests -p 'test_release_manual.py'
       - name: Package local candidate
         id: package
         run: |
@@ -58,6 +58,13 @@ jobs:
           version="$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')"
           printf 'archive=dist/voxel-demolition-%s-aarch64-apple-darwin.zip\n' "$version" >> "$GITHUB_OUTPUT"
           printf 'checksum=dist/voxel-demolition-%s-aarch64-apple-darwin-SHA256SUMS.txt\n' "$version" >> "$GITHUB_OUTPUT"
+      - name: Verify manual parity and live links
+        run: |
+          python3 scripts/verify-release-manual.py \
+            --archive '${{ steps.package.outputs.archive }}' \
+            --pdf dist/Voxel-Demolition-Player-Manual.pdf \
+            --checksum '${{ steps.package.outputs.checksum }}' \
+            --check-links
       - name: Upload local candidate and manual
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
@@ -67,4 +74,4 @@ jobs:
           path: |
             ${{ steps.package.outputs.archive }}
             ${{ steps.package.outputs.checksum }}
-            output/pdf/Voxel-Demolition-Player-Manual.pdf
+            dist/Voxel-Demolition-Player-Manual.pdf
