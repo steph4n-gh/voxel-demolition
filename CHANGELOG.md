@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.5 - 2026-10-10
+
+### Changed
+
+- Regenerate the player PDF during packaging and export identical copies for the
+  app, ZIP and downloadable manual.
+- Check manual source hashes, PDF navigation, ZIP checksums and live links before
+  creating a release draft and again before publishing its downloaded assets.
+- Keep Developer ID signing and Apple notarization local; remove the hosted
+  signing workflow.
+- Add a source-linked engineering article and gameplay gallery.
+
+### Fixed
+
+- Repair GitHub documentation navigation, manual and source links, and the
+  engineering diagram's rendering.
+- Use GitHub's current README overview URL in the player PDF.
+
 ## 0.2.4 - 2026-10-10
 
 ### Changed

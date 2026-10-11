@@ -7,9 +7,9 @@ the illustrated 25-page manual. The signed game executable is **~1.7 MB**.
 Explore nine procedural districts, pick from ten weapons, and turn a carefully
 chosen cut into a falling skyline.
 
-**[Download 0.2.4 for Apple Silicon](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.4/voxel-demolition-0.2.4-aarch64-apple-darwin-notarized.zip)**
-· [Player manual (PDF)](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.4/Voxel-Demolition-Player-Manual.pdf)
-· [Release notes](https://github.com/steph4n-gh/voxel-demolition/releases/tag/v0.2.4)
+**[Download 0.2.5 for Apple Silicon](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.5/voxel-demolition-0.2.5-aarch64-apple-darwin-notarized.zip)**
+· [Player manual (PDF)](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.5/Voxel-Demolition-Player-Manual.pdf)
+· [Release notes](https://github.com/steph4n-gh/voxel-demolition/releases/tag/v0.2.5)
 
 ![Neo Tokyo's cyan and orange twin towers beneath a night sky](docs/manual-assets/neo-tokyo.jpg)
 
@@ -71,7 +71,7 @@ these systems work together.
 
 ### Small enough to share
 
-| 0.2.4 Apple Silicon package | Size |
+| Measured 0.2.4 Apple Silicon package | Size |
 | --- | ---: |
 | Signed game executable | 1,703,984 bytes (~1.7 MB) |
 | Complete notarized ZIP, including the manual and license notices | 5,481,204 bytes (~5.5 MB) |
@@ -86,7 +86,7 @@ executable; the simulation's working memory is separate.
 
 Download the ZIP above, extract it, move **Voxel Demolition.app** to Applications,
 and open it. The app is signed with Developer ID, notarized by Apple, and stapled.
-Apple Silicon macOS is the qualified platform for 0.2.4; native checks used an
+Apple Silicon macOS is the qualified platform for 0.2.5; native checks used an
 Apple M4 Pro running macOS 27. Other platforms and macOS versions need their own
 build and gameplay checks.
 

@@ -1,6 +1,6 @@
 [package]
 name = "voxel_demolition"
-version = "0.2.4"
+version = "0.2.5"
 edition = "2021"
 description = "A native first-person voxel demolition sandbox with procedural structures, physics, and synthesized audio."
 license = "MIT OR Apache-2.0"

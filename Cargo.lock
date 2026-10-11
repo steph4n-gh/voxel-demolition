@@ -370,7 +370,7 @@ dependencies = [
 
 [[package]]
 name = "voxel_demolition"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "macroquad",
 ]

@@ -1,6 +1,6 @@
 # Voxel Demolition: Oblivion Protocol
 
-**Player Handbook · Version 0.2.4**
+**Player Handbook · Version 0.2.5**
 
 **Read the structure. Choose the cut. Watch the consequences.**
 

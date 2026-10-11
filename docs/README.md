@@ -212,4 +212,4 @@ The result is a small playable system whose material changes can affect
 geometry, motion, hazards, scoring, and sound together. Read the
 [player manual](manual.md), inspect the
 [source](https://github.com/steph4n-gh/voxel-demolition/tree/main/src), or
-[download the game](https://github.com/steph4n-gh/voxel-demolition/releases/tag/v0.2.4).
+[download the game](https://github.com/steph4n-gh/voxel-demolition/releases/tag/v0.2.5).
