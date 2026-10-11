@@ -70,7 +70,7 @@ Macroquad providing windowing, rendering, audio playback, and the embedded font.
   and check transformed voxel positions at landing-zone boundaries. Replay and
   the workbench pause live simulation so inspection does not advance a contract.
 
-Read **[Inside Voxel Demolition: the engineering](https://github.com/steph4n-gh/voxel-demolition/tree/main/docs#inside-voxel-demolition)** for the
+Read **[Inside Voxel Demolition: the engineering](docs/README.md)** for the
 algorithms, source pointers, performance measurements, and the choices that make
 these systems work together.
 
@@ -140,9 +140,9 @@ to another directory if needed.
 
 ## Development and releases
 
-- [CI checks](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/ci.yml): tests, Clippy, the manual, and an ad hoc
+- [CI checks](.github/workflows/ci.yml): tests, Clippy, the manual, and an ad hoc
   macOS candidate on GitHub-hosted Apple Silicon runners.
-- [Contributing](https://github.com/steph4n-gh/voxel-demolition?tab=contributing-ov-file): focused fixes, checks, and contribution terms.
+- [Contributing](CONTRIBUTING.md): focused fixes, checks, and contribution terms.
 - [Developer notes](docs/development.md): source layout, simulation invariants,
   and test guidance.
 - [Release guide](docs/release.md): verification, packaging, macOS signing and
@@ -151,7 +151,7 @@ to another directory if needed.
 
 ## License
 
-Licensed under **MIT OR Apache-2.0**; see [LICENSE-MIT](https://github.com/steph4n-gh/voxel-demolition?tab=MIT-2-ov-file) and
-[LICENSE-APACHE](https://github.com/steph4n-gh/voxel-demolition?tab=Apache-2.0-1-ov-file). Dependency and embedded-font attributions are
+Licensed under **MIT OR Apache-2.0**; see [LICENSE-MIT](LICENSE-MIT) and
+[LICENSE-APACHE](LICENSE-APACHE). Dependency and embedded-font attributions are
 listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and included with release
 packages.
