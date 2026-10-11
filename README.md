@@ -9,7 +9,12 @@ chosen cut into a falling skyline.
 
 **[Download 0.2.5 for Apple Silicon](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.5/voxel-demolition-0.2.5-aarch64-apple-darwin-notarized.zip)**
 · [Player manual (PDF)](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.5/Voxel-Demolition-Player-Manual.pdf)
+· [ZIP checksum](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.5/voxel-demolition-0.2.5-aarch64-apple-darwin-notarized-SHA256SUMS.txt)
 · [Release notes](https://github.com/steph4n-gh/voxel-demolition/releases/tag/v0.2.5)
+
+Ready to play? Follow the [installation and first-play steps](#play). The download
+above contains the macOS app; GitHub's **Source code** archives are for building
+the game yourself.
 
 ![Neo Tokyo's cyan and orange twin towers beneath a night sky](docs/manual-assets/neo-tokyo.jpg)
 
@@ -71,10 +76,10 @@ these systems work together.
 
 ### Small enough to share
 
-| Measured 0.2.4 Apple Silicon package | Size |
+| Measured 0.2.5 Apple Silicon package | Size |
 | --- | ---: |
 | Signed game executable | 1,703,984 bytes (~1.7 MB) |
-| Complete notarized ZIP, including the manual and license notices | 5,481,204 bytes (~5.5 MB) |
+| Complete notarized ZIP, including the manual and license notices | 5,483,392 bytes (~5.5 MB) |
 
 The release uses LTO, stripped symbols, and speed optimization. Paired simulation
 and meshing measurements informed the choice of build;
@@ -84,15 +89,32 @@ executable; the simulation's working memory is separate.
 
 ## Play
 
-Download the ZIP above, extract it, move **Voxel Demolition.app** to Applications,
-and open it. The app is signed with Developer ID, notarized by Apple, and stapled.
+1. Download the **Apple Silicon macOS ZIP** linked above.
+2. Double-click the ZIP to expand it, then open the extracted folder.
+3. Move **Voxel Demolition.app** to **Applications** and open it. Confirm the
+   normal first-launch prompt if macOS asks.
+
+The app is signed with Developer ID, notarized by Apple, and stapled.
 Apple Silicon macOS is the qualified platform for 0.2.5; native checks used an
 Apple M4 Pro running macOS 27. Other platforms and macOS versions need their own
 build and gameplay checks.
 
-Move with `W/A/S/D` and the mouse, choose a weapon with `1` through `0`, and fire
-with the left mouse button. `F1` opens help, `Tab` opens the workbench, and `Esc`
-pauses or resumes.
+The game starts in sandbox mode, without a contract deadline. Move with
+`W/A/S/D` and look with the mouse, choose a weapon with `1` through `0`, and fire
+with the left mouse button. `F1` opens help, `Tab` opens the workbench, `R` resets
+the district, and `Esc` releases the cursor and pauses; press it again to resume.
+Press `C` when you want to start a campaign contract. If function keys change
+brightness or volume, hold **Fn** or **Globe** while pressing them.
+
+To check the ZIP, download its checksum beside it and run this in the folder
+containing both files:
+
+```sh
+shasum -a 256 -c voxel-demolition-0.2.5-aarch64-apple-darwin-notarized-SHA256SUMS.txt
+```
+
+The result should end in `OK`. Installation troubleshooting is in
+[the manual](docs/manual.md#12-installation-session-state-and-troubleshooting).
 
 The [player manual](docs/manual.md) covers every control, weapon, level, contract,
 workbench setting, and replay control. The workbench, help, free cursor, and
@@ -102,9 +124,9 @@ campaign history.
 
 ## Build
 
-Install a stable Rust toolchain and use the pinned dependencies. On macOS, also
-install Xcode's command-line tools. See the [developer notes](docs/development.md)
-for Linux build prerequisites.
+From a source checkout, install a stable Rust toolchain and use the pinned
+dependencies. On macOS, also install Xcode's command-line tools. See the
+[developer notes](docs/development.md) for Linux build prerequisites.
 
 ```sh
 cargo build --locked --release
@@ -118,7 +140,7 @@ to another directory if needed.
 
 ## Development and releases
 
-- [CI checks](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/ci.yml): tests, Clippy, the manual, and a local
+- [CI checks](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/ci.yml): tests, Clippy, the manual, and an ad hoc
   macOS candidate on GitHub-hosted Apple Silicon runners.
 - [Contributing](https://github.com/steph4n-gh/voxel-demolition?tab=contributing-ov-file): focused fixes, checks, and contribution terms.
 - [Developer notes](docs/development.md): source layout, simulation invariants,

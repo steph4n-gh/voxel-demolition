@@ -1,12 +1,18 @@
 # Inside Voxel Demolition
 
+[Play 0.2.5](https://github.com/steph4n-gh/voxel-demolition?tab=readme-ov-file#play)
+· [Player manual](manual.md)
+· [Manual PDF](https://github.com/steph4n-gh/voxel-demolition/releases/download/v0.2.5/Voxel-Demolition-Player-Manual.pdf)
+· [Developer notes](development.md)
+· [Release guide](release.md)
+
 **A city built from materials. A soundtrack built from signals. Collapses you
 can inspect.**
 
 Voxel Demolition fits a native first-person game, nine generated districts, ten
 weapons, four siege platforms, and eight contracts into a **1.70 MB signed
 executable**. The complete **5.48 MB macOS download** includes the illustrated
-25-page manual and license notices. Those are the measured sizes of the 0.2.4
+25-page manual and license notices. Those are the measured sizes of the 0.2.5
 Apple Silicon release.
 
 The engineering accomplishment is making the systems agree about the world.
@@ -199,7 +205,7 @@ settings, live-loop ordering, and the original mission limits, and requires a
 settled win. CI runs the ordinary suite and explicitly runs the generated-world
 campaign and precision checks before packaging.
 
-The [published 0.2.4 source qualification](https://github.com/steph4n-gh/voxel-demolition/actions/runs/38094231815)
+The [published 0.2.5 source qualification](https://github.com/steph4n-gh/voxel-demolition/actions/runs/38104804366)
 passed 1,512 ordinary test executions across 39 targets, with zero failures and
 eight deliberately ignored checks; it separately passed all 16 campaign checks,
 the dedicated Corporate Drop precision fixture, doc tests, and Clippy.
