@@ -74,7 +74,7 @@ these systems work together.
 | 0.2.4 Apple Silicon package | Size |
 | --- | ---: |
 | Signed game executable | 1,703,984 bytes (~1.7 MB) |
-| Complete notarized ZIP, including the manual and license notices | 5,480,506 bytes (~5.5 MB) |
+| Complete notarized ZIP, including the manual and license notices | 5,481,204 bytes (~5.5 MB) |
 
 The release uses LTO, stripped symbols, and speed optimization. Paired simulation
 and meshing measurements informed the choice of build;
