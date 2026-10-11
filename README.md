@@ -70,7 +70,7 @@ Macroquad providing windowing, rendering, audio playback, and the embedded font.
   and check transformed voxel positions at landing-zone boundaries. Replay and
   the workbench pause live simulation so inspection does not advance a contract.
 
-Read **[Inside Voxel Demolition: the engineering](docs/README.md)** for the
+Read **[Inside Voxel Demolition: the engineering](https://github.com/steph4n-gh/voxel-demolition/blob/main/docs/README.md)** for the
 algorithms, source pointers, performance measurements, and the choices that make
 these systems work together.
 
@@ -140,7 +140,7 @@ to another directory if needed.
 
 ## Development and releases
 
-- [CI checks](.github/workflows/ci.yml): tests, Clippy, the manual, and an ad hoc
+- [CI checks](https://github.com/steph4n-gh/voxel-demolition/blob/main/.github/workflows/ci.yml): tests, Clippy, the manual, and an ad hoc
   macOS candidate on GitHub-hosted Apple Silicon runners.
 - [Contributing](CONTRIBUTING.md): focused fixes, checks, and contribution terms.
 - [Developer notes](docs/development.md): source layout, simulation invariants,
